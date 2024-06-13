@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
@@ -8,11 +7,9 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: PixabayPage(),
     );
   }
@@ -26,22 +23,25 @@ class PixabayPage extends StatefulWidget {
 }
 
 class _PixabayPageState extends State<PixabayPage> {
+  // 初期値は空のListを与える
   List imageList = [];
 
+  // 非同期の関数になったため返り値の型にFutureがつき、さらに async キーワードが追加されました。
   Future<void> fetchImages() async {
+    // await で待つことで Future が外れ Response 型のデータを受け取ることができました。
     Response response = await Dio().get(
       'https://pixabay.com/api/?key=44357262-54a7d9b47553a12cf1b02a6dc&q=yellow+flowers&image_type=photo',
     );
-    print(response.data);
-
     // 用意した imageList に hits の value を代入する
     imageList = response.data['hits'];
-    setState(() {});
+    setState(() {}); // 画面を更新したいので setState も呼んでおきます
   }
 
+  // この関数の中の処理は初回に一度だけ実行されます。
   @override
   void initState() {
     super.initState();
+    // 最初に一度だけ画像データを取得する。
     fetchImages();
   }
 
