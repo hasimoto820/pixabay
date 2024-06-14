@@ -28,9 +28,9 @@ class PixabayPage extends StatefulWidget {
 class _PixabayPageState extends State<PixabayPage> {
   List imageList = [];
 
-  Future<void> fetchImages(String text) async {
+  Future<void> fetchImages() async {
     Response response = await Dio().get(
-      'https://pixabay.com/api/?key=44357262-54a7d9b47553a12cf1b02a6dc&q=$text&image_type=photo&per_page=100',
+      'https://pixabay.com/api/?key=44357262-54a7d9b47553a12cf1b02a6dc&q=いちご&image_type=photo&per_page=100',
     );
     print(response.data);
 
@@ -42,7 +42,7 @@ class _PixabayPageState extends State<PixabayPage> {
   @override
   void initState() {
     super.initState();
-    fetchImages('みかん');
+    fetchImages();
   }
 
   @override
@@ -57,7 +57,6 @@ class _PixabayPageState extends State<PixabayPage> {
           onFieldSubmitted: (text) {
             print('@@@@@@@@@ 100 @@@@@@@@@');
             print(text);
-            fetchImages(text);
           },
         ),
         backgroundColor: Colors.blue,
