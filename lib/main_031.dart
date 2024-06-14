@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'dart:io';
 
 void main() {
   runApp(const MyApp());
@@ -82,29 +80,22 @@ class _PixabayPageState extends State<PixabayPage> {
           // プレビュー用の画像データがあるURLは previewURL の value に入っています。
           // URLをつかった画像表示は Image.network(表示したいURL) で実装できます。
           return InkWell(
-            onTap: () async {
+            onTap: () {
               print(image['likes']);
 
-              // カレントディレクトリ
-              Directory dir = await getTemporaryDirectory();
+              // Directory dir = await getTemporaryDirectory();
 
-              print(dir);
+              // Response response = await Dio().get(
+              //   // previewURL は荒いためより高解像度の webformatURL から画像をダウンロードします。
+              //   image['webformatURL'],
+              //   options: Options(
+              //     // 画像をダウンロードするときは ResponseType.bytes を指定します。
+              //     responseType: ResponseType.bytes,
+              //   ),
+              // );
 
-              Response response = await Dio().get(
-                // previewURL は荒いためより高解像度の webformatURL から画像をダウンロードします。
-                image['webformatURL'],
-                options: Options(
-                  // 画像をダウンロードするときは ResponseType.bytes を指定します。
-                  responseType: ResponseType.bytes,
-                ),
-              );
-
-              // フォルダの中に image.png という名前でファイルを作り、そこに画像データを書き込みます。
-              File imageFile = await File('${dir.path}/image.png')
-                  .writeAsBytes(response.data);
-
-              await Share.shareXFiles([XFile(imageFile.path)],
-                  text: 'Great picture');
+              // // フォルダの中に image.png という名前でファイルを作り、そこに画像データを書き込みます。
+              // File imageFile = await File('${dir.path}/image.png').writeAsBytes(response.data);
             },
             child: Stack(
               fit: StackFit.expand,
@@ -127,7 +118,6 @@ class _PixabayPageState extends State<PixabayPage> {
                           Icons.thumb_up_alt_outlined,
                           size: 14,
                         ),
-                        Text('${image['likes']}'),
                         Text(image['likes'].toString()),
                       ],
                     ),

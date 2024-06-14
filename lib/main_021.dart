@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:dio/dio.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'dart:io';
 
 void main() {
   runApp(const MyApp());
@@ -81,60 +78,14 @@ class _PixabayPageState extends State<PixabayPage> {
           Map<String, dynamic> image = imageList[index];
           // プレビュー用の画像データがあるURLは previewURL の value に入っています。
           // URLをつかった画像表示は Image.network(表示したいURL) で実装できます。
-          return InkWell(
-            onTap: () async {
-              print(image['likes']);
-
-              // カレントディレクトリ
-              Directory dir = await getTemporaryDirectory();
-
-              print(dir);
-
-              Response response = await Dio().get(
-                // previewURL は荒いためより高解像度の webformatURL から画像をダウンロードします。
-                image['webformatURL'],
-                options: Options(
-                  // 画像をダウンロードするときは ResponseType.bytes を指定します。
-                  responseType: ResponseType.bytes,
-                ),
-              );
-
-              // フォルダの中に image.png という名前でファイルを作り、そこに画像データを書き込みます。
-              File imageFile = await File('${dir.path}/image.png')
-                  .writeAsBytes(response.data);
-
-              await Share.shareXFiles([XFile(imageFile.path)],
-                  text: 'Great picture');
-            },
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Image.network(
-                    image['previewURL'],
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Container(
-                    color: Colors.white,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.thumb_up_alt_outlined,
-                          size: 14,
-                        ),
-                        Text('${image['likes']}'),
-                        Text(image['likes'].toString()),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          return Stack(
+            children: [
+              Image.network(image['previewURL']),
+              Container(
+                color: Colors.white,
+                child: Text(image['likes'].toString()),
+              ),
+            ],
           );
         },
       ),

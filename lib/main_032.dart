@@ -85,10 +85,7 @@ class _PixabayPageState extends State<PixabayPage> {
             onTap: () async {
               print(image['likes']);
 
-              // カレントディレクトリ
               Directory dir = await getTemporaryDirectory();
-
-              print(dir);
 
               Response response = await Dio().get(
                 // previewURL は荒いためより高解像度の webformatURL から画像をダウンロードします。
@@ -103,8 +100,7 @@ class _PixabayPageState extends State<PixabayPage> {
               File imageFile = await File('${dir.path}/image.png')
                   .writeAsBytes(response.data);
 
-              await Share.shareXFiles([XFile(imageFile.path)],
-                  text: 'Great picture');
+              await Share.shareFiles([imageFile.path]);
             },
             child: Stack(
               fit: StackFit.expand,
@@ -127,7 +123,6 @@ class _PixabayPageState extends State<PixabayPage> {
                           Icons.thumb_up_alt_outlined,
                           size: 14,
                         ),
-                        Text('${image['likes']}'),
                         Text(image['likes'].toString()),
                       ],
                     ),

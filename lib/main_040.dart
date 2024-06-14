@@ -85,7 +85,6 @@ class _PixabayPageState extends State<PixabayPage> {
             onTap: () async {
               print(image['likes']);
 
-              // カレントディレクトリ
               Directory dir = await getTemporaryDirectory();
 
               print(dir);
@@ -127,7 +126,6 @@ class _PixabayPageState extends State<PixabayPage> {
                           Icons.thumb_up_alt_outlined,
                           size: 14,
                         ),
-                        Text('${image['likes']}'),
                         Text(image['likes'].toString()),
                       ],
                     ),

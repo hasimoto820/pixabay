@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'dart:io';
 
 void main() {
   runApp(const MyApp());
@@ -11,11 +11,9 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: PixabayPage(),
     );
   }
@@ -29,23 +27,27 @@ class PixabayPage extends StatefulWidget {
 }
 
 class _PixabayPageState extends State<PixabayPage> {
+  // 初期値は空のListを与えます。
   List imageList = [];
 
+  // 非同期の関数になったため返り値の型にFutureがつき、さらに async キーワードが追加されました。
   Future<void> fetchImages(String text) async {
+    // await で待つことで Future が外れ Response 型のデータを受け取ることができました。
     Response response = await Dio().get(
-      'https://pixabay.com/api/?key=44357262-54a7d9b47553a12cf1b02a6dc&q=$text&image_type=photo&per_page=100',
+      'https://pixabay.com/api/?key=_ここには各々のkeyが入ります_&q=$text&image_type=photo&pretty=true&per_page=100',
     );
-    print(response.data);
-
     // 用意した imageList に hits の value を代入する
     imageList = response.data['hits'];
-    setState(() {});
+    setState(() {}); // 画面を更新したいので setState も呼んでおきます
   }
 
+  // この関数の中の処理は初回に一度だけ実行されます。
   @override
   void initState() {
     super.initState();
-    fetchImages('みかん');
+    // 最初に一度だけ画像データを取得する。
+    // 最初は花の画像を検索する。
+    fetchImages('花');
   }
 
   @override
@@ -53,17 +55,15 @@ class _PixabayPageState extends State<PixabayPage> {
     return Scaffold(
       appBar: AppBar(
         title: TextFormField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             fillColor: Colors.white,
             filled: true,
           ),
           onFieldSubmitted: (text) {
-            print('@@@@@@@@@ 100 @@@@@@@@@');
             print(text);
             fetchImages(text);
           },
         ),
-        backgroundColor: Colors.blue,
       ),
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -83,12 +83,9 @@ class _PixabayPageState extends State<PixabayPage> {
           // URLをつかった画像表示は Image.network(表示したいURL) で実装できます。
           return InkWell(
             onTap: () async {
-              print(image['likes']);
-
-              // カレントディレクトリ
+              // まずは一時保存に使えるフォルダ情報を取得します。
+              // Future 型なので await で待ちます
               Directory dir = await getTemporaryDirectory();
-
-              print(dir);
 
               Response response = await Dio().get(
                 // previewURL は荒いためより高解像度の webformatURL から画像をダウンロードします。
@@ -98,37 +95,37 @@ class _PixabayPageState extends State<PixabayPage> {
                   responseType: ResponseType.bytes,
                 ),
               );
-
               // フォルダの中に image.png という名前でファイルを作り、そこに画像データを書き込みます。
               File imageFile = await File('${dir.path}/image.png')
                   .writeAsBytes(response.data);
 
-              await Share.shareXFiles([XFile(imageFile.path)],
-                  text: 'Great picture');
+              // path を指定すると share できます。
+              await Share.shareFiles([imageFile.path]);
             },
             child: Stack(
+              // StackFit.expand を与えると領域いっぱいに広がろうとします。
               fit: StackFit.expand,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Image.network(
-                    image['previewURL'],
-                    fit: BoxFit.cover,
-                  ),
+                Image.network(
+                  image['previewURL'],
+                  // BoxFit.cover を与えると領域いっぱいに広がろうとします。
+                  fit: BoxFit.cover,
                 ),
                 Align(
+                  // 左上ではなく右下に表示するようにします。
                   alignment: Alignment.bottomRight,
                   child: Container(
                     color: Colors.white,
                     child: Row(
+                      // MainAxisSize.min を与えると必要最小限のサイズに縮小します。
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // 何の数字かわからないので 👍 アイコンを追加します。
                         const Icon(
                           Icons.thumb_up_alt_outlined,
                           size: 14,
                         ),
                         Text('${image['likes']}'),
-                        Text(image['likes'].toString()),
                       ],
                     ),
                   ),
